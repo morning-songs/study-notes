@@ -4,6 +4,10 @@
 
 `MVVM` 模式，应用的 `UI` 以及基础表示和业务逻辑被分成三个独立的类：视图，用于封装 `UI` 和 `UI` 逻辑；视图模型，用于封装表示逻辑和状态；以及模型，用于封装应用的业务逻辑和数据。
 
+
+
+### 介绍
+
 ##### 发展
 
 因为 `WPF` 技术出现，从而使 `MVC` 架构模式有所改进，`MVVM` 模式便是使用的是[数据绑定](https://baike.baidu.com/item/数据绑定?fromModule=lemma_inlink)基础架构。它们可以轻松构建 `UI` 的必要元素。可以参考 `The Composite Application Guidance for WPF(prism)`。
@@ -99,7 +103,7 @@ oInput.oninput = function() {
 updateDom(proxy.age);
 ```
 
-#### 双向绑定
+#### 数据绑定
 
 例如，实现如下的 `Vue` 双向数据绑定语法。
 
@@ -148,7 +152,7 @@ updateDom(proxy.age);
                 if (node.nodeType === 3) {
                     let txt = node.nodeValue;
                     // 更新文本节点
-                    txt = txt.replace(/\{\{(.+?)\}\}/g, ($0, $1) => {
+                    txt = txt.replace(/\{\{(.+?)\}\}/g, ($0, $1) => { // 最小匹配
                         return this.$data[$1];
                     })
                     // 更新页面展示
@@ -193,7 +197,7 @@ updateDom(proxy.age);
 ```js
 // MVVM.js
 (function () {
-    // 观察者
+    // 观察者（监听数据的更新，并及时更新视图）
     const OBSERVER = (function() {
         const DATA = {}; // 所有被监听的数据
         return {
@@ -210,9 +214,10 @@ updateDom(proxy.age);
         }
     })();
 
+    // 记录所有依赖项
     const USEDKEY = (function() {
         let keyList = [],
-            unused = true; // 所有被依赖的数据是否都已被使用过（即：挂载）。
+            unused = true; // 所有要依赖的数据是否都未被使用过（这里指挂载）。
         return {
             isUnused() {
                 return unused;
@@ -224,14 +229,15 @@ updateDom(proxy.age);
                 return [...new Set(keyList)];
             },
             stop() {
-                unused = false;
+                unused = false; // 当所有依赖项都被挂载完成之后，停止记录。
             },
             clearAll() {
-                keyList = []; // 所有数据被监听之后，清空记录。
+                keyList = []; // 所有依赖项被加入观察者监听之后，清空记录。
             }
         }
     })();
 
+    // 解析{{}}语法
     const complie_text = function(node, txt) {
         // 更新文本节点
         txt = txt.replace(/\{\{(.+?)\}\}/g, ($0, $1) => {
@@ -293,4 +299,400 @@ updateDom(proxy.age);
     }
 })();
 ```
+
+##### 解析算式
+
+通常，`{{}}` 中也可以使用一些简单的表达式。这里，只需要修改以下部分即可。
+
+```js
+// 解析{{}}中的表达式
+const complie_exp = function(exp, data) {
+    // 不安全的做法
+    with(data) {
+        return eval(exp);
+    }
+}
+
+// 解析{{}}语法
+const complie_text = function (node, txt) {
+    // 更新文本节点
+    txt = txt.replace(/\{\{(.+?)\}\}/g, ($0, $1) => {
+        return complie_exp($1, this.$data);
+    })
+    // 更新页面展示
+    node.nodeValue = txt;
+}
+```
+
+##### 深度解析
+
+在挂载阶段，只解析了入口元素的子节点。如果要解析其后代节点，则需要使用递归的形式进行深度解析。
+
+首先，定义一个深度解析节点的函数，然后，将 `mount` 后的入口元素传入进行解析。
+
+```js
+// 深度解析节点
+const complie_node_deeply = function(root) {
+    const children = root.childNodes;
+    children.forEach(node => {
+        // 元素节点
+        if(node.nodeType === 1) {
+            complie_node_deeply.call(this, node);
+        }
+        // 文本节点
+        if (node.nodeType === 3) {
+            const txt = node.nodeValue;
+            complie_text.call(this, node, txt);
+            // 获取记录
+            let usedKeys = USEDKEY.getKeys();
+            // 添加订阅
+            usedKeys.forEach(key => {
+                OBSERVER.on(key, () => {
+                    // 更新视图
+                    complie_text.call(this, node, txt);
+                })
+            });
+            // 订阅完之后，清空记录。因为所有要依赖的数据都已经被添加进观察者之中了。
+            USEDKEY.clearAll();
+        }
+    })
+}
+
+// 应用初始化类
+class Init {
+	// ...
+    mount(selector) {
+        // 入口元素
+        const root = document.querySelector(selector);
+        // 深度解析
+        complie_node_deeply.call(this, root);
+        // 停止记录
+        USEDKEY.stop();
+        return this;
+    }
+}
+```
+
+接着，就可以在后代元素中使用 `{{}}` 语法了。
+
+```html
+<div id="app">
+    <h4>个人简介</h4>
+    <p>姓名：{{name}}</p>
+    <p>年龄：{{age * 2}}</p>
+</div>
+```
+
+##### 指令属性
+
+在元素节点上，可以使用一些指令属性来动态绑定数据。
+
+```js
+// 解析指令属性
+const complie_attrs = function(node, attrName, attrValue) {
+    // m-bind: 或 : 指令
+    if (/^m-bind:(.+)$/.test(attrName) || /^:(.+)$/.test(attrName)) {
+        const attr = RegExp.$1,
+              value = complie_exp(attrValue, this.$data);
+
+        if(attr === "class" || attr === "classname") {
+            return node.classList.add(value);
+        }
+        if(attr === "style") {
+            return node.style.cssText += value;
+        }
+        // 除了class和style之外，原先的同名属性都会被覆盖。
+        node.setAttribute(attr, value);
+    }
+}
+
+// 添加订阅
+const subscribe = function(cb) {
+    // 获取记录
+    const usedKeys = USEDKEY.getKeys();
+    // 添加订阅
+    usedKeys.forEach(key => {
+        OBSERVER.on(key, cb);
+    });
+    // 订阅完之后，清空记录。因为所有要依赖的数据都已经被添加进观察者之中了。
+    USEDKEY.clearAll();
+}
+
+// 深度解析节点
+const complie_node_deeply = function (root) {
+    const children = root.childNodes;
+    children.forEach(node => {
+        // 元素节点
+        if (node.nodeType === 1) {
+            complie_node_deeply.call(this, node);
+
+            // 属性节点
+            const attrs = node.attributes;
+            if(attrs.length > 0) {
+                [...attrs].forEach(({nodeName, nodeValue}) => {
+                    complie_attrs.call(this, node, nodeName, nodeValue);
+                    // 添加订阅
+                    subscribe(() => {
+                        // 更新标签属性中，动态绑定的数据
+                        complie_attrs.call(this, node, nodeName, nodeValue);
+                    });
+                })
+            }
+        }
+        // 文本节点
+        if (node.nodeType === 3) {
+            const txt = node.nodeValue;
+            complie_text.call(this, node, txt);
+            // 添加订阅
+            subscribe(() => {
+                // 更新视图
+                complie_text.call(this, node, txt);
+            });
+        }
+    })
+}
+```
+
+然后，可以使用 `v-bind` 指令在元素上绑定动态属性了。
+
+```html
+<div id="app">
+    <h4 class="wz" m-bind:className="className" style="padding: 0;" m-bind:style="style">个人简介</h4>
+    <p>姓名：{{name}}</p>
+    <p age="10" :age="age">年龄：{{age * 2}}</p>
+</div>
+
+<script src="./MVVM.js"></script>
+<script>
+    const vm = MVVM.createApp({
+        data() {
+            return {
+                name: "wz",
+                age: 16,
+                className: "className",
+                style: "color: red"
+            }
+        }
+    }).mount("#app");
+</script>
+```
+
+如果要支持 `style` 使用对象的话，则修改以下代码即可。
+
+```js
+// 解析指令属性
+const complie_attrs = function (node, attrName, attrValue) {
+    // m-bind: 或 : 指令
+    if (/^m-bind:(.+)$/.test(attrName) || /^:(.+)$/.test(attrName)) {
+        const attr = RegExp.$1,
+              value = complie_exp(attrValue, this.$data);
+
+        if (attr === "class" || attr === "classname") {
+            return node.classList.add(value);
+        }
+        if (attr === "style") {
+            let cssText = value || "";
+            if(typeof value === "object") {
+                cssText = Object.entries(cssText);
+                cssText = cssText.map(item => item.join(": ")).join("; ");
+            }
+            return node.style.cssText += cssText;
+        }
+        // 除了class和style之外，原先的同名属性都会被覆盖。
+        node.setAttribute(attr, value);
+    }
+}
+```
+
+只支持使用 `css` 键值对定义的 `style` 对象。
+
+```js
+{
+	"color": "red",
+ 	"font-size": "14px"
+}
+```
+
+##### 双向绑定
+
+实现 `v-model` 的双向数据绑定。
+
+```js
+// 解析指令属性
+const complie_attrs = function (node, attrName, attrValue) {
+    // ...
+    
+    // m-model
+    if (/^m-model$/.test(attrName)) {
+        const value = complie_exp(attrValue, this.$data),
+              type = node.type;
+        // 根据不同的控件类型，执行不同的操作
+        // 文本框
+        if (type === "text" || type === "textarea") {
+            node.value = value;
+            // 挂载之前，添加事件
+            USEDKEY.isUnused() && node.addEventListener("input", () => {
+                this.$data[attrValue] = node.value;
+            });
+        }
+        // 单选框
+        if (type === "radio") {
+            node.checked = node.value === value;
+            // 挂载之前，添加事件
+            USEDKEY.isUnused() && node.addEventListener("change", () => {
+                this.$data[attrValue] = node.value;
+            });
+        }
+        // 多选框
+        if(type === "checkbox") {
+            node.checked = value.includes(node.value);
+            USEDKEY.isUnused() && node.addEventListener("change", () => {
+                if(node.checked) {
+                    // 勾选
+                    this.$data[attrValue] = [...this.$data[attrValue], node.value];
+                } else {
+                    // 取消勾选
+                    const arr = this.$data[attrValue],
+                          index = arr.indexOf(node.value);
+                    if(index !== -1) arr.splice(index, 1);
+                    this.$data[attrValue] = arr;
+                }
+            });
+        }
+        // 单选菜单
+        if(type === "select-one") {
+            node.value = value;
+            // 挂载之前，添加事件
+            USEDKEY.isUnused() && node.addEventListener("change", () => {
+                this.$data[attrValue] = node.value;
+            });
+        }
+        // 多选菜单
+        if (type === "select-multiple") {
+            [...node].forEach(option => {
+                option.selected = value.includes(option.value);
+            })
+            // 挂载之前，添加事件
+            USEDKEY.isUnused() && node.addEventListener("change", () => {
+                let arr = [];
+                [...node].forEach(option => {
+                    if(option.selected) arr.push(option.value);
+                });
+                this.$data[attrValue] = arr;
+            });
+        }
+    }
+}
+```
+
+使用如下：
+
+```html
+<div id="app">
+    <div>
+        <h4>姓名：{{name}}</h4>
+        <p>输入姓名：<input type="text" m-model="name" /></p>
+    </div>
+    <div>
+        <p>性别：{{sex}}</p>
+        <p>
+            选择性别：
+            <input type="radio" name="sex" value="男" m-model="sex">男
+            <input type="radio" name="sex" value="女" m-model="sex">女
+        </p>
+    </div>
+    <div>
+        <p>运动：{{sports}}</p>
+        <p>锻炼方式：
+            <input type="checkbox" value="跳舞" m-model="sports">跳舞
+            <input type="checkbox" value="游泳" m-model="sports">游泳
+            <input type="checkbox" value="篮球" m-model="sports">篮球
+            <input type="checkbox" value="跑步" m-model="sports">跑步
+        </p>
+    </div>
+    <div>
+        <p>星期：{{weak}}</p>
+        <select m-model="weak">
+            <option value="1">星期一</option>
+            <option value="2">星期二</option>
+            <option value="3">星期三</option>
+            <option value="4">星期四</option>
+            <option value="5">星期五</option>
+            <option value="6">星期六</option>
+            <option value="0">星期天</option>
+        </select>
+    </div>
+    <div>
+        <p>朋友：{{friends}}</p>
+        <select m-model="friends" multiple>
+            <option value="王">王</option>
+            <option value="李">李</option>
+            <option value="张">张</option>
+            <option value="刘">刘</option>
+            <option value="陈">陈</option>
+        </select>
+    </div>
+    <div>
+        <input type="textarea" m-model="desc" />
+        <p>自我介绍：{{desc}}</p>
+    </div>
+</div>
+
+<script src="./MVVM.js"></script>
+<script>
+    const vm = MVVM.createApp({
+        data() {
+            return {
+                name: "wz",
+                desc: "自我介绍",
+                sex: "女",
+                sports: ["跳舞", "篮球"],
+                weak: "1",
+                friends: ["王", "刘"]
+            }
+        }
+    }).mount("#app");
+</script>
+```
+
+##### 条件判断
+
+实现条件判断的功能
+
+```js
+// 解析指令属性
+const complie_attrs = function (node, attrName, attrValue) {
+ 	// ...
+    
+    // m-show
+    if (/^m-show$/.test(attrName)) {
+        const value = complie_exp(attrValue, this.$data);
+        node.style.display = value ? "" : "none";
+    }
+}
+```
+
+使用
+
+```html
+<div id="app">
+    <div m-show="bool">是否显示</div>
+</div>
+
+<script src="./MVVM.js"></script>
+<script>
+    const vm = MVVM.createApp({
+        data() {
+            return {
+                bool: true
+            }
+        }
+    }).mount("#app");
+
+    document.onclick = function() {
+        vm.$data.bool = !vm.$data.bool;
+    }
+</script>
+```
+
 

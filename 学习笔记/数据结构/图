@@ -1,0 +1,319 @@
+# 图
+
+在数学中，图是描述于一组对象的结构，其中某些对象对在某种意义上是 “相关的”。这些对象对应于称为顶点的 [数学抽象](https://baike.baidu.com/item/数学抽象/19146175?fromModule=lemma_inlink)（也称为节点或点），并且每个相关的顶点对都称为边（也称为链接或线）。通常，图形以图解形式描绘为顶点的一组点或环，并通过边的[线或](https://baike.baidu.com/item/线或/12731199?fromModule=lemma_inlink)曲线连接。 图形是[离散数学](https://baike.baidu.com/item/离散数学/2396?fromModule=lemma_inlink)的研究对象之一。
+
+   																		 <img src="images/%E5%9B%BE/resize,m_lfit,w_536,limit_1.png" alt="img" style="zoom:50%;" /> 
+
+### 基础
+
+#### 定义
+
+主要有以下两种定义。
+
+##### 二元组的定义
+
+图 `G` 是一个有序二元组 `(V,E)`，其中 `V` 称为顶集（`Vertices Set`），`E` 称为边集（`Edges set`），`E` 与 `V` 不相交。它们亦可写成 `V(G)` 和 `E(G)`。其中，顶集的元素被称为顶点（`Vertex`），边集的元素被称为边（`edge`）。
+
+`E` 的元素都是二元组，用 `(x,y)` 表示，其中 `x, y∈V`。
+
+##### 三元组的定义
+
+图 `G` 是指一个三元组 `(V,E,I)`，其中 `V` 称为顶集，`E` 称为边集，`E` 与 `V` 不相交；`I` 称为[关联函数](https://baike.baidu.com/item/关联函数/8320961?fromModule=lemma_inlink)，`I` 将 `E` 中的每一个元素映射到 `V × V`。如果 `e` 被映射到 `(u,v)`，那么称边 `e` 连接顶点 `u, v`，而 `u, v` 则称作 `e` 的端点，`u, v` 此时关于 `e` 相邻。同时，若两条边 `i, j` 有一个公共顶点 `u`，则称 `i, j` 关于 `u` 相邻。
+
+#### 分类
+
+##### 有向图和无向图
+
+如果给图的每条边规定一个方向，那么得到的图称为[有向图](https://baike.baidu.com/item/有向图/1852743?fromModule=lemma_inlink)。在有向图中，与一个节点相关联的边有出边和入边之分。相反，边没有方向的图称为[无向图](https://baike.baidu.com/item/无向图/1680427?fromModule=lemma_inlink)。
+
+##### 单图
+
+一个图如果任意两顶点之间只有一条边（在[有向图](https://baike.baidu.com/item/有向图/1852743?fromModule=lemma_inlink)中为两顶点之间每个方向只有一条边）；边集中不含环，则称为[单图](https://baike.baidu.com/item/单图/53347077?fromModule=lemma_inlink)。
+
+#### 术语
+
+阶（`Order`）：图 `G` 中点集 `V` 的大小称作图 `G` 的阶。
+
+子图（`Sub-Graph`）：当图 `G' = (V', E')` 其中 `V'` 包含于 `V`，`E'` 包含于 `E`，则 `G'` 称作图 `G = (V, E)` 的子图。每个图都是本身的子图。
+
+生成子图（`Spanning Sub-Graph`）：指满足条件 `V(G') = V(G)` 的 `G` 的子图 `G'`。
+
+[导出子图](https://baike.baidu.com/item/导出子图/10410373?fromModule=lemma_inlink)（`Induced Subgraph`）：以图 `G` 的顶点集 `V` 的 [非空子集](https://baike.baidu.com/item/非空子集/10180460?fromModule=lemma_inlink) `V1`为顶点集，以两端点均在 `V1` 中的全体边为边集的 `G` 的子图，称为 `V1` 导出的导出子图；以图 `G` 的边集 `E` 的非空子集 `E1` 为边集，以 `E1` 中边关联的顶点的全体为顶点集的 `G` 的子图，称为 `E1` 导出的导出子图。
+
+度（`Degree`）：一个顶点的度是指与该顶点相关联的边的条数，顶点 `v` 的度记作 `d(v)`。
+
+入度（`In-degree`）和[出度](https://baike.baidu.com/item/出度/6923266?fromModule=lemma_inlink)（`Out-degree`）：对于[有向图](https://baike.baidu.com/item/有向图/1852743?fromModule=lemma_inlink)来说，一个顶点的度可细分为入度和出度。一个顶点的入度是指与其关联的各边之中，以其为终点的边数；出度则是相对的概念，指以该顶点为起点的边数。
+
+自环（`Loop`）：若一条边的两个顶点为同一顶点，则此边称作自环。
+
+路径（`Path`）：从 `u` 到 `v` 的一条路径是指一个序列 `v0, e1, v1, e2, v2, ... ek, vk`，其中 `ei` 的顶点为 `vi` 及 `vi - 1`，`k` 称作路径的长度。如果它的起止顶点相同，该路径是“闭”的，反之，则称为“开”的。一条路径称为一简单路径（`simple path`），如果路径中除起始与终止顶点可以重合外，所有顶点两两不等。
+
+行迹（`Trace`）：如果路径 `P(u,v)` 中的边各不相同，则该路径称为 `u` 到 `v` 的一条行迹。
+
+轨道（`Track`）：如果路径 `P(u,v)` 中的顶点各不相同，则该路径称为 `u` 到 `v` 的一条轨道。
+
+闭的行迹称作回路（`Circuit`），闭的轨称作圈（`Cycle`）。
+
+（另一种定义是：`walk` 对应上述的 `path`，`path` 对应上述的 `track`。`Trail` 对应 `trace`。）
+
+桥（`Bridge`）：若去掉一条边，便会使得整个图不连通，该边称为桥。
+
+#### 操作
+
+图的基本操作：
+
+（1）创建一个图结构 `CreateGraph(G)`
+
+（2）检索给定顶点 `LocateVex(G,elem)`
+
+（3）获取图中某个顶点 `GetVex(G,v)`
+
+（4）为图中顶点赋值 `PutVex(G,v,value)`
+
+（5）返回第一个[邻接点](https://baike.baidu.com/item/邻接点/14585984?fromModule=lemma_inlink) `FirstAdjVex(G,v)`
+
+（6）返回下一个邻接点 `NextAdjVex(G,v,w)`
+
+（7）插入一个顶点 `InsertVex(G,v)`
+
+（8）删除一个顶点 `DeleteVex(G,v)`
+
+（9）插入一条边 `InsertEdge(G,v,w)`
+
+（10）删除一条边 `DeleteEdge(G,v,w)`
+
+（11）遍历图 `Traverse(G,v)`
+
+#### 重要的图
+
+- 树
+- 平面图
+- [连通图](https://baike.baidu.com/item/连通图?fromModule=lemma_inlink)
+- [强连通图](https://baike.baidu.com/item/强连通图?fromModule=lemma_inlink)
+- [有向无环图](https://baike.baidu.com/item/有向无环图/10972513?fromModule=lemma_inlink)
+- [`AOV` 网](https://baike.baidu.com/item/AOV网/10628561?fromModule=lemma_inlink)
+- [`AOE` 网](https://baike.baidu.com/item/AOE网/9991645?fromModule=lemma_inlink)
+- [完全图](https://baike.baidu.com/item/完全图?fromModule=lemma_inlink)：每一对不同顶点间都有边相连的的图，记作 `Kn`。
+- [二分图](https://baike.baidu.com/item/二分图/9089095?fromModule=lemma_inlink)：顶集，且每一条边都有一个顶点在 `X` 中，而另一个顶点在 `Y` 中。
+- [完全二分图](https://baike.baidu.com/item/完全二分图/10074098?fromModule=lemma_inlink)：二分图 `G` 中若任意两个 `X` 和 `Y` 中的顶点都有边相连。若，则图 `G` 记作 `Km, n`。
+- [正则图](https://baike.baidu.com/item/正则图/10038215?fromModule=lemma_inlink)：如果图中所有顶点的度皆相等，则此图称为正则图
+- [二叉图](https://baike.baidu.com/item/二叉图/20154889?fromModule=lemma_inlink)
+
+
+
+### 实现
+
+图：就是用来存储顶点及其关系（该顶点的边或相邻节点）的一种数据结构。
+
+在往图中添加节点的时候涉及到节点的进和出 —— 找出特定的节点，加入指定的节点。而管理节点的进出可以使用栈或队列的数据结构，其中，栈 —— 深度遍历，队列 —— 广度遍历。
+
+##### 简单实现
+
+```js
+const Graph = (function() {
+    return class Graph {
+        constructor() {
+            // 存储顶点
+            this.vertices = [];
+            // 存储关系
+            this.edges = {}; // 如果节点为字符串，使用对象即可。如果为对象，则应使用Map。
+        }
+        // 添加顶点
+        addVertex(...items) {
+            items.forEach(item => {
+                // 已经存在
+                if (this.vertices.includes(item)) return;
+                // 添加顶点
+                this.vertices.push(item);
+                // 初始化顶点关系
+                this.edges[item] = [];
+            });
+        }
+        // 添加边
+        addEdge(v1, v2) {
+            // 添加顶点
+            this.addVertex(v1, v2);
+            // 避免重复
+            if (this.edges[v1].includes(v2)) return;
+            // 绑定关系
+            this.edges[v1].push(v2);
+            this.edges[v2].push(v1);
+        }
+    }
+})();
+```
+
+基础的图已经完成了，使用时直接添加边关系即可，添加顶点的方法当作内部方法使用：
+
+```js
+const graph = new Graph();
+
+graph.addEdge("A", "B");
+graph.addEdge("A", "C");
+graph.addEdge("B", "C");
+graph.addEdge("B", "D");
+graph.addEdge("D", "E");
+graph.addEdge("C", "E");
+
+console.log(graph);
+```
+
+图的遍历方式，分为深度优先和广度优先。实现深度优先借助栈，实现广度优先借助队列。
+
+```js
+const Graph = (function() {
+    // 队列
+    const Queue = (function() {
+        let sym = Symbol();
+        return class Queue {
+            constructor() {
+                this[sym] = [];
+            }
+            // 入队
+            enqueue(...items) {
+                this[sym].push(...items);
+            }
+            // 静态出队
+            getFirst() {
+                if(!this.size()) return console.warn("队已空");
+                return this[sym][0];
+            }
+            // 动态出队
+            dequeue() {
+                if(!this.size()) return console.warn("队已空");
+                return this[sym].shift();
+            }
+            // 清空队列
+            clear() {
+                this[sym] = [];
+            }
+            // 队长
+            size() {
+                return this[sym].length;
+            }
+        }
+    })();
+    
+    // 栈
+    const Stack = (function () {
+        let sym = Symbol();
+        return class Stack {
+            constructor() {
+                this[sym] = []; 
+            }
+            // 添加单条数据
+            push(item) {
+                this[sym].push(item);
+            }
+            // 批量添加数据
+            batch(...items) {
+                this[sym].push(...items);
+            }
+            // 静态读取数据
+            peek() {
+                if (!this.size()) return console.warn("栈已空");
+                return this[sym][this.size() - 1];
+            }
+            // 动态读取数据
+            pop() {
+                if (!this.size()) return console.warn("栈已空");
+                return this[sym].pop();
+            }
+            // 清空栈
+            clear() {
+                this[sym] = [];
+            }
+            // 栈长度
+            size() {
+                return this[sym].length;
+            }
+        }
+    })();
+    
+    return class Graph {
+        constructor() {
+            // 存储顶点
+            this.vertices = [];
+            // 存储关系
+            this.edges = {}; // 如果节点为字符串，使用对象即可。如果为对象，则应使用Map。
+        }
+        // 添加顶点
+        addVertex(...items) {
+            items.forEach(item => {
+                // 已经存在
+                if (this.vertices.includes(item)) return;
+                // 添加顶点
+                this.vertices.push(item);
+                // 初始化顶点关系
+                this.edges[item] = [];
+            });
+        }
+        // 添加关系
+        addEdge(v1, v2) {
+            // 添加顶点
+            this.addVertex(v1, v2);
+            // 避免重复
+            if (this.edges[v1].includes(v2)) return;
+            // 绑定关系
+            this.edges[v1].push(v2);
+            this.edges[v2].push(v1);
+        }
+        // 深度优先（Depth-first search）
+        dfs(v) {
+            const { vertices, edges } = this;
+            if (!vertices.includes(v)) return;
+            const stack = new Stack(),
+                  tag = {};
+            stack.push(v);
+            tag[v] = true;
+            let str = v;
+            while (stack.size()) {
+                const d = stack.pop(),
+                      dEdge = edges[d];
+                dEdge.forEach(item => {
+                    if (tag[item]) return;
+                    stack.push(item);
+                    tag[item] = true;
+                    str += `==>${item}`;
+                });
+            }
+            return str;
+        }
+        // 广度优先（Breadth-first search）
+        bfs(v) {
+            const {vertices, edges} = this;
+            if (!vertices.includes(v)) return;
+            const queue = new Queue(),
+                  tag = {};
+            queue.enqueue(v);
+            tag[v] = true;
+            let str = v;
+            while(queue.size()) {
+                const d = queue.dequeue(),
+                      dEdge = edges[d];
+                dEdge.forEach(item => {
+                    if (tag[item]) return;
+                    queue.enqueue(item);
+                    tag[item] = true;
+                    str += `==>${item}`;
+                });
+            }
+            return str;
+        }
+    }
+})();
+```
+
+```js
+const graph = new Graph();
+
+graph.addEdge("A", "B");
+graph.addEdge("A", "C");
+graph.addEdge("B", "C");
+graph.addEdge("B", "D");
+graph.addEdge("D", "E");
+graph.addEdge("C", "E");
+
+console.log(graph.bfs("A"));
+```
+

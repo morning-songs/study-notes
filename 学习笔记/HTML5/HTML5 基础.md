@@ -60,6 +60,8 @@
 | `manifest` |             `URL`              | 定义一个 `URL`，在这个 `URL` 上描述文档的缓存信息。          |
 |  `xmlns`   | `http://www.w3.org/1999/xhtml` | 规定 `XML` 的 `namespace` 属性，即指派文档的 `XML` 命名空间（如果您需要您的内容符合 `XHTML`，则使用这个属性）。`HTML` 不支持。只有 `XHTML` 支持。 |
 
+注释：`<html>` 标签支持 `HTML` 的全局属性，支持全局事件属性。
+
 ​		`HTML5` 中，增加了两个新属性：`manifest` 和 `xmlns`。`xmlns` 属性在 `XHTML` 中是必需的，但在 `HTML`中不是。然而，即使 `XHTML` 文档中的 `<html>` 没有使用 `xmlns` 属性，`W3C` 上的 `HTML` 验证器也不会报错。这是因为 `"xmlns=http://www.w3.org/1999/xhtml"` 是一个固定值，即使您没有包含它，此值也会被添加到 `<html>` 标签中。
 
 ```css
@@ -115,6 +117,8 @@ html {
 | :-------: | :-----: | :----------------------------------------------------------- |
 | `profile` | *`URL`* | 一个由空格分隔的 `URL` 列表，这些 `URL` 包含着有关页面的元数据信息。 |
 
+注释：`<head>` 标签支持 `HTML` 的全局属性，但不支持事件属性。
+
 **`profile` 属性的更多信息**
 
 ​		文档的头部经常会包含一些 `<meta>` 标签，用来告诉浏览器关于文档的附加信息。
@@ -140,6 +144,8 @@ head {
 ​		`body` 元素包含文档的所有内容（比如文本、超链接、图像、表格和列表等等）。
 
 ​		在 `HTML 5` 中，删除了所有 `body` 元素的 "呈现属性"。
+
+注释：`<body>` 标签支持 `HTML` 的全局属性，支持事件属性（包括全局的和特有的）。
 
 ```css
 body {
@@ -241,6 +247,65 @@ body {
 ```html
 <标签>该标签的内容</标签>
 ```
+
+​		下表列出了 `HTML` 标签简写及全称：
+
+|     标签      |          英文全称           | 中文说明                       |
+| :-----------: | :-------------------------: | :----------------------------- |
+|      `a`      |          `Anchor`           | 锚                             |
+|    `abbr`     |       `Abbreviation`        | 缩写词                         |
+|   `acronym`   |          `Acronym`          | 取首字母的缩写词               |
+|   `address`   |          `Address`          | 地址                           |
+|     `alt`     |           `alter`           | 替用(一般是图片显示不出的提示) |
+|      `b`      |           `Bold`            | 粗体（文本）                   |
+|     `bdo`     |  `Bi-Directional Override`  | 文本显示方向                   |
+|     `big`     |            `Big`            | 变大（文本）                   |
+| `blockquote`  |      `Block Quotation`      | 区块引用语                     |
+|     `br`      |           `Break`           | 换行                           |
+|    `cell`     |           `cell`            | 巢                             |
+| `cellpadding` |        `cellpadding`        | 巢补白                         |
+| `cellspacing` |        `cellspacing`        | 巢空间                         |
+|   `center`    |         `Centered`          | 居中（文本）                   |
+|    `cite`     |         `Citation`          | 引用                           |
+|    `code`     |           `Code`            | 源代码（文本）                 |
+|     `dd`      |  `Definition Description`   | 定义描述                       |
+|     `del`     |          `Deleted`          | 删除（的文本）                 |
+|     `dfn`     | `Defines a Definition Term` | 定义定义条目                   |
+|     `div`     |         `Division`          | 分隔                           |
+|     `dl`      |      `Definition List`      | 定义列表                       |
+|     `dt`      |      `Definition Term`      | 定义术语                       |
+|     `em`      |        `Emphasized`         | 加重（文本）                   |
+|    `font`     |           `Font`            | 字体                           |
+|   `h1 ~ h6`   |   `Header 1 to Header 6`    | 标题 1 到标题 6                |
+|     `hr`      |      `Horizontal Rule`      | 水平尺                         |
+|    `href`     |    `hypertext reference`    | 超文本引用                     |
+|      `i`      |          `Italic`           | 斜体（文本）                   |
+|   `iframe`    |       `Inline frame`        | 定义内联框架                   |
+|     `ins`     |         `Inserted`          | 插入（的文本）                 |
+|     `kbd`     |         `Keyboard`          | 键盘（文本）                   |
+|     `li`      |         `List Item`         | 列表项目                       |
+|     `nl`      |     `navigation lists`      | 导航列表                       |
+|     `ol`      |       `Ordered List`        | 排序列表                       |
+|  `optgroup`   |       `Option group`        | 定义选项组                     |
+|      `p`      |         `Paragraph`         | 段落                           |
+|     `pre`     |       `Preformatted`        | 预定义格式（文本 ）            |
+|      `q`      |         `Quotation`         | 引用语                         |
+|     `rel`     |          `Reload`           | 加载                           |
+| `s / strike`  |       `Strikethrough`       | 删除线                         |
+|    `samp`     |          `Sample`           | 示例（文本                     |
+|    `small`    |           `Small`           | 变小（文本）                   |
+|    `span`     |           `Span`            | 范围                           |
+|     `src`     |          `Source`           | 源文件链接                     |
+|   `strong`    |          `Strong`           | 加重（文本）                   |
+|     `sub`     |        `Subscripted`        | 下标（文本）                   |
+|     `sup`     |       `Superscripted`       | 上标（文本）                   |
+|     `td`      |      `table data cell`      | 表格中的一个单元格             |
+|     `th`      |     `table header cell`     | 表格中的表头                   |
+|     `tr`      |         `table row`         | 表格中的一行                   |
+|     `tt`      |         `Teletype`          | 打印机（文本）                 |
+|      `u`      |        `Underlined`         | 下划线（文本）                 |
+|     `ul`      |      `Unordered List`       | 不排序列表                     |
+|     `var`     |         `Variable`          | 变量（文本）                   |
 
 #### 元素
 

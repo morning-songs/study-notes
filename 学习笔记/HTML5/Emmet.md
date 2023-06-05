@@ -55,7 +55,19 @@ div#aaa
 ​		用 `[]` 来添加属性
 
 ```html
-div[title='hello' colspan=3]
+div[class="a1 a2 a3"]
+```
+
+​		生成：
+
+```html
+<div class="a1 a2 a3"></div>
+```
+
+​		输入：
+
+```html
+div[title=hello colspan=3]
 ```
 
 ​		生成：
@@ -66,7 +78,7 @@ div[title='hello' colspan=3]
 
 ##### 批量生成
 
-用 `*n` 可以一次性生成多个相同元素
+​		用 `*n` 可以一次性生成多个相同元素
 
 ```html
 div.item*5
@@ -80,123 +92,6 @@ div.item*5
 <div class="item"></div>
 <div class="item"></div>
 <div class="item"></div>
-```
-
-##### 快速编号
-
-​		用 `$` 来生成编号（主要为批量生成的元素编号），实际上就是个占位符 （很实用，写几个 `$` 默认会有几位的数字）。
-
-```html
-li.aaa$*3
-```
-
-​		结果
-
-```html
-<li class="aaa1"></li>
-<li class="aaa2"></li>
-<li class="aaa3"></li>
-```
-
-​		输入
-
-```html
-h$[title=item$]{Header $}*3
-```
-
-​		生成
-
-```html
-<h1 title="item1">Header 1</h1>
-<h2 title="item2">Header 2</h2>
-<h3 title="item3">Header 3</h3>
-```
-
-​		输入
-
-```html
-ul>li.item$$$*5
-```
-
-​		生成
-
-```html
-<ul>
-        <li class="item001"></li>
-        <li class="item002"></li>
-        <li class="item003"></li>
-        <li class="item004"></li>
-        <li class="item005"></li>
-</ul>
-```
-
-##### 改起始值
-
-​		用 `@n` 来修改编号的起始值（负值代表数字倒序，仅写 `-` 代表 `-1`，其他值要写出对应的 `-2`、`-3` 等，负几无论生成的数量是几，最后一个元素的数字一定是几，比如 `-3` ，则最后一个元素的数字是 `3`）。
-
-​		正序
-
-```html
-li.aaa$@3*3
-```
-
-​		生成：
-
-```html
-<li class="aaa3"></li>
-<li class="aaa4"></li>
-<li class="aaa5"></li>
-```
-
-​		倒序
-
-```html
-li.aaa$@-3*3
-```
-
-​		生成
-
-```html
-<li class="aaa5"></li>
-<li class="aaa4"></li>
-<li class="aaa3"></li>
-```
-
-#####  添加文本
-
-​		`{}` 可以添加文本
-
-​		输入：
-
-```html
-div.container>div.item.item${测试 $}*8
-```
-
-​		生成：
-
-```html
-<div class="container">
-      <div class="item item1">测试 1</div>
-      <div class="item item2">测试 2</div>
-      <div class="item item3">测试 3</div>
-      <div class="item item4">测试 4</div>
-      <div class="item item5">测试 5</div>
-      <div class="item item6">测试 6</div>
-      <div class="item item7">测试 7</div>
-      <div class="item item8">测试 8</div>
-</div> 
-```
-
-​		输入
-
-```html
-p>{Click }+a{here}+{ to continue}
-```
-
-​		生成
-
-```html
-<p>Click <a href="">here</a> to continue</p>
 ```
 
 ##### 添加子元素
@@ -298,6 +193,133 @@ div>(header>ul>li*2>a)+footer>p
 <footer>
     <p></p>
 </footer>
+```
+
+#####  添加文本
+
+​		`{}` 可以添加文本
+
+```html
+div{文本}
+```
+
+​		生成
+
+```html
+<div>文本</div>
+```
+
+​		输入
+
+```html
+p>{Click }+a{here}+{ to continue}
+```
+
+​		生成
+
+```html
+<p>Click <a href="">here</a> to continue</p>
+```
+
+##### 快速编号
+
+​		用 `$` 来生成编号（主要为批量生成的元素编号），实际上就是个占位符 （很实用，写几个 `$` 默认会有几位的数字）。
+
+```html
+li.aaa$*3
+```
+
+​		结果
+
+```html
+<li class="aaa1"></li>
+<li class="aaa2"></li>
+<li class="aaa3"></li>
+```
+
+​		输入
+
+```html
+h$[title=item$]{Header $}*3
+```
+
+​		生成
+
+```html
+<h1 title="item1">Header 1</h1>
+<h2 title="item2">Header 2</h2>
+<h3 title="item3">Header 3</h3>
+```
+
+​		输入
+
+```html
+ul>li.item$$$*5
+```
+
+​		生成
+
+```html
+<ul>
+        <li class="item001"></li>
+        <li class="item002"></li>
+        <li class="item003"></li>
+        <li class="item004"></li>
+        <li class="item005"></li>
+</ul>
+```
+
+​		输入
+
+```html
+div.container>div.item.item${测试 $}*8
+```
+
+​		生成
+
+```html
+<div class="container">
+      <div class="item item1">测试 1</div>
+      <div class="item item2">测试 2</div>
+      <div class="item item3">测试 3</div>
+      <div class="item item4">测试 4</div>
+      <div class="item item5">测试 5</div>
+      <div class="item item6">测试 6</div>
+      <div class="item item7">测试 7</div>
+      <div class="item item8">测试 8</div>
+</div> 
+```
+
+##### 改起始值
+
+​		用 `@n` 来修改编号的起始值（负值代表数字倒序，仅写 `-` 代表 `-1`，其他值要写出对应的 `-2`、`-3` 等，负几无论生成的数量是几，最后一个元素的数字一定是几，比如 `-3` ，则最后一个元素的数字是 `3`）。
+
+​		正序
+
+```html
+li.aaa$@3*3
+```
+
+​		生成
+
+```html
+<li class="aaa3"></li>
+<li class="aaa4"></li>
+<li class="aaa5"></li>
+```
+
+​		倒序
+
+```html
+li.aaa$@-3*3
+```
+
+​		生成
+
+```html
+<li class="aaa5"></li>
+<li class="aaa4"></li>
+<li class="aaa3"></li>
 ```
 
  

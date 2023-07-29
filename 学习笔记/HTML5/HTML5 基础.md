@@ -4,6 +4,14 @@
 
 ​		超文本标记语言（`HyperText Markup Language`，`HTML`）是一种用于创建网页结构的标准标记语言，您可以使用 `HTML` 来建立自己的 `WEB` 站点。`HTML` 运行在浏览器上，由浏览器来解析。
 
+```html
+<!DOCTYPE html>
+<html lang="en">
+    <head></head>
+    <body></body>
+</html>
+```
+
 
 
 #### 实例
@@ -12,10 +20,10 @@
 
 ```html
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<title>网页标题</title>
+    <meta charset="utf-8">
+    <title>网页标题</title>
 </head>
 <body>
     <h1>第一个文章标题</h1>
